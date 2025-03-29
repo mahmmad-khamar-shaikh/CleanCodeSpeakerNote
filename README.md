@@ -377,3 +377,215 @@ double x; // Is this an amount? A medical dosage?
 ✔️ **Use domain-specific terms** relevant to the project.  
 
 **🔹 Clean code starts with clear, meaningful names! 🏷️**
+
+## 🔹 Function Should be small
+### **"Functions Should Be Small" in Clean Code (Java) 🔥💡**  
+
+One of the core principles of **Clean Code** (as emphasized by Robert C. Martin, a.k.a. Uncle Bob) is that **functions should be small**—ideally, just a few lines long. 📝  
+
+---
+
+### **Why Should Functions Be Small? 🤔**  
+✅ **Readability** – Small functions are easier to understand 👀.  
+✅ **Maintainability** – Reduces complexity and makes debugging easier 🔧.  
+✅ **Reusability** – A well-structured function can be reused elsewhere 🔄.  
+✅ **Single Responsibility Principle (SRP)** – Each function should do **only one thing** 🎯.  
+
+---
+
+### ❌ **Bad Example: Large Function (Hard to Read & Maintain) 😵**  
+
+```java
+public void processOrder(Order order) {
+    // Validate Order
+    if (order == null || order.getItems().isEmpty()) {
+        throw new IllegalArgumentException("Order is invalid");
+    }
+    
+    // Calculate Total Price
+    double total = 0;
+    for (Item item : order.getItems()) {
+        total += item.getPrice() * item.getQuantity();
+    }
+
+    // Apply Discount
+    if (total > 100) {
+        total *= 0.9; // 10% discount
+    }
+
+    // Process Payment
+    Payment payment = new Payment(order.getUser(), total);
+    payment.process();
+
+    // Send Confirmation Email
+    EmailService emailService = new EmailService();
+    emailService.sendOrderConfirmation(order);
+}
+```
+⚠ **Problems:**  
+- ❌ Does **too many things**: validation, calculation, discount, payment, and email sending.  
+- ❌ Hard to test individual parts 🧪.  
+- ❌ Difficult to read and modify 🧐.  
+
+---
+
+### ✅ **Good Example: Small, Clean Functions 🏆**  
+
+```java
+public void processOrder(Order order) {
+    validateOrder(order);
+    double total = calculateTotal(order);
+    total = applyDiscount(total);
+    processPayment(order.getUser(), total);
+    sendConfirmation(order);
+}
+
+private void validateOrder(Order order) {
+    if (order == null || order.getItems().isEmpty()) {
+        throw new IllegalArgumentException("Order is invalid");
+    }
+}
+
+private double calculateTotal(Order order) {
+    return order.getItems().stream()
+                .mapToDouble(item -> item.getPrice() * item.getQuantity())
+                .sum();
+}
+
+private double applyDiscount(double total) {
+    return (total > 100) ? total * 0.9 : total;
+}
+
+private void processPayment(User user, double total) {
+    new Payment(user, total).process();
+}
+
+private void sendConfirmation(Order order) {
+    new EmailService().sendOrderConfirmation(order);
+}
+```
+
+### **Why is this better? 🤩**  
+✔ **Each function does only ONE thing** 🎯.  
+✔ **Easier to read** 👓 and understand.  
+✔ **Small & focused functions** 🧩.  
+✔ **Easier to test each function separately** ✅.  
+
+---
+# **Code Comments in Clean Code 📝✨**  
+
+## **What Does Clean Code Say About Comments? 🤔**  
+In **Clean Code**, Robert C. Martin emphasizes that **comments are often a sign of failure in expressing intent through code itself**. Instead of relying on comments, **the code should be self-explanatory** through meaningful names, small functions, and clear logic.  
+
+However, **this doesn’t mean you should NEVER use comments**. Instead, **use them wisely** where they truly add value. 🚀  
+
+---
+
+## **When Are Comments Bad? ❌**  
+
+1️⃣ **Explaining "What" Instead of Writing Clear Code**  
+Bad comments explain *what* the code does instead of making the code self-explanatory.  
+
+🚨 **Bad Example: Unnecessary Comment**  
+```java
+// Adds two numbers and returns the result
+public int add(int a, int b) {
+    return a + b;
+}
+```
+🛑 **Why is this bad?**  
+- The method name `add` already makes it clear.  
+- The comment **doesn’t add value** and only clutters the code.  
+
+✅ **Better Approach: Self-Explanatory Code**  
+```java
+public int add(int a, int b) {
+    return a + b; // No comment needed
+}
+```
+
+---
+
+2️⃣ **Redundant or Outdated Comments**  
+When comments become outdated, they can **mislead** developers.  
+
+🚨 **Bad Example: Outdated Comment**  
+```java
+// Applies a 10% discount if the total is over $100
+private double applyDiscount(double total) {
+    return (total > 200) ? total * 0.85 : total; // Now it’s 15% but the comment is wrong
+}
+```
+🛑 **Why is this bad?**  
+- The comment says **10% discount**, but the code actually applies **15%** when total > 200.  
+- **Code and comment mismatch can create confusion**.  
+
+✅ **Better Approach: Express Intent Clearly**  
+```java
+private double applyDiscount(double total) {
+    return (total > 200) ? total * 0.85 : total; // Adjusted discount logic
+}
+```
+OR EVEN BETTER  
+```java
+private static final double DISCOUNT_THRESHOLD = 200;
+private static final double DISCOUNT_RATE = 0.85;
+
+private double applyDiscount(double total) {
+    return (total > DISCOUNT_THRESHOLD) ? total * DISCOUNT_RATE : total;
+}
+```
+🎯 **Now the intent is clear without needing a comment!**  
+
+---
+
+## **When Are Comments Good? ✅**  
+
+1️⃣ **Clarifying a Complex Business Rule**  
+Sometimes, business rules are too complex to be obvious in code.  
+
+🟢 **Good Example: Explaining a Business Rule**  
+```java
+/**
+ * Calculates the loyalty discount based on customer status.
+ * Gold members get 20%, Silver gets 10%, and others get none.
+ */
+private double calculateLoyaltyDiscount(Customer customer) {
+    switch (customer.getMembershipLevel()) {
+        case GOLD: return 0.80; // 20% off
+        case SILVER: return 0.90; // 10% off
+        default: return 1.00; // No discount
+    }
+}
+```
+✅ **Why is this good?**  
+- The comment **explains the business rule**, not what the code does.  
+- If the rule changes, the developer can update both code and comment accordingly.  
+
+---
+
+2️⃣ **TODO or Fixme Comments (Temporary Notes) 🛠️**  
+When working on a large codebase, **TODO comments can be helpful** to track pending improvements.  
+
+🟢 **Good Example: TODO Comment**  
+```java
+// TODO: Optimize this method for large datasets
+public List<User> fetchActiveUsers() {
+    return database.getAllUsers().stream()
+            .filter(User::isActive)
+            .collect(Collectors.toList());
+}
+```
+✅ **Why is this good?**  
+- Marks a **future improvement** without affecting the code.  
+- Helps teams track pending tasks.  
+
+---
+
+## **Key Takeaways 🏆**  
+✔ **Prefer self-explanatory code over comments**.  
+✔ **Use comments only when necessary** (business rules, TODOs, or clarifications).  
+✔ **Avoid redundant, misleading, or outdated comments**.  
+✔ **Keep comments meaningful and relevant**—they should add value, not clutter.  
+
+By following these principles, your code remains **clean, readable, and maintainable**! 🚀🔥
