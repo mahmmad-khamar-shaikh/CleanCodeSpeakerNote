@@ -381,7 +381,7 @@ double x; // Is this an amount? A medical dosage?
 ## 🔹 Function Should be small
 ### **"Functions Should Be Small" in Clean Code (Java) 🔥💡**  
 
-One of the core principles of **Clean Code** (as emphasized by Robert C. Martin, a.k.a. Uncle Bob) is that **functions should be small**—ideally, just a few lines long. 📝  
+One of the core principles of **Clean Code** is that **functions should be small**—ideally, just a few lines long. 📝  
 
 ---
 
